@@ -1,0 +1,31 @@
+<section class="page-heading"><span class="eyebrow">VISTA GENERAL</span><h1>Resumen de máquinas</h1><p>Estado de las máquinas y recursos asignados.</p></section>
+@if(machines.connection() === 'offline') { <p role="status">Las actualizaciones en tiempo real están desconectadas. <button mat-button (click)="machines.retryLive()">Reconectar</button></p> }
+@else if(machines.connection() === 'reconnecting') { <p role="status">Reconectando actualizaciones…</p> }
+@if(machines.loading()) {
+  <section class="dashboard-loading" role="status" aria-label="Cargando resumen" aria-busy="true">
+    <span class="sr-only">Cargando resumen…</span>
+    <div aria-hidden="true">
+      <div class="summary-grid">@for(item of [1,2,3,4]; track item) {
+        <article class="summary"><app-loading-skeleton width="65%" height="14px" /><app-loading-skeleton width="40%" height="38px" /><app-loading-skeleton width="75%" height="13px" /></article>
+      }</div>
+      <div class="section-heading skeleton-heading"><app-loading-skeleton width="210px" height="22px" /><app-loading-skeleton width="330px" height="15px" /></div>
+      <div class="resource-grid">@for(metric of metrics; track metric.key) {
+        <article class="resource-panel"><app-loading-skeleton width="55%" height="16px" /><app-loading-skeleton class="skeleton-metric" width="45%" height="38px" /><app-loading-skeleton height="140px" /><app-loading-skeleton class="skeleton-caption" width="80%" height="13px" /></article>
+      }</div>
+    </div>
+  </section>
+}
+@else if(machines.error()) { <section class="empty-state panel" role="alert"><h2>No pudimos cargar el resumen</h2><p>Comprueba tu conexión y vuelve a intentarlo.</p><button mat-flat-button (click)="reload()">Reintentar</button></section> }
+@else {
+  <section class="summary-grid" aria-label="Estado del inventario">
+    <article class="summary"><span>Total de máquinas</span><strong>{{ machines.summary().total }}</strong><small>Inventario completo</small></article>
+    <article class="summary"><span>En ejecución</span><strong>{{ running() }}</strong><small>Máquinas activas</small></article>
+    <article class="summary"><span>Detenidas</span><strong>{{ stopped() }}</strong><small>Sin ejecución</small></article>
+    <article class="summary"><span>Suspendidas</span><strong>{{ suspended() }}</strong><small>Ejecución suspendida</small></article>
+  </section>
+  <section aria-labelledby="resources-title"><div class="section-heading"><div><h2 id="resources-title">Recursos asignados</h2><p>Solo máquinas en ejecución</p></div></div>
+    <div class="resource-grid">@for(metric of metrics; track metric.key) { <article class="resource-panel"><span class="metric-label">{{ metric.label }}</span><p class="metric-value">{{ machines.totals()[metric.key] | number:'1.0-6' }} <span>{{ metric.unit }}</span></p>
+      <app-resource-chart [metric]="metric.key" [label]="metric.label" [unit]="metric.unit" [total]="machines.totals()[metric.key]" /><small>Total global de VMs en ejecución</small></article> }</div>
+  </section>
+
+}

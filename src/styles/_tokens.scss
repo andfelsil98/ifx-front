@@ -1,0 +1,17 @@
+@use '@angular/material' as mat;
+$primary-palette: mat.$azure-palette;
+$font-family: ('Sora Variable', Sora, system-ui, sans-serif);
+$density: 0;
+$radius-control: .5rem;
+$radius-dialog: .75rem;
+$spacing: (1: .25rem, 2: .5rem, 3: .75rem, 4: 1rem, 5: 1.5rem, 6: 2rem);
+$light: (primary:#2563eb, on-primary:#fff, primary-container:#eaf0ff, on-primary-container:#0f172a,
+  secondary:#0f766e, on-secondary:#fff, secondary-container:#ccfbf1, on-secondary-container:#134e4a,
+  tertiary:#0369a1, on-tertiary:#fff, surface:#fff, on-surface:#0f172a, on-surface-variant:#475569,
+  surface-container-lowest:#fff, surface-container-low:#fff, surface-container:#fff, surface-container-high:#fff, surface-container-highest:#f1f5f9,
+  outline:#64748b, outline-variant:#e2e8f0, error:#b91c1c, on-error:#fff, error-container:#fee2e2, on-error-container:#7f1d1d);
+$dark: (primary:#93c5fd, on-primary:#172554, primary-container:#1e3a8a, on-primary-container:#dbeafe,
+  secondary:#5eead4, on-secondary:#042f2e, secondary-container:#134e4a, on-secondary-container:#ccfbf1,
+  tertiary:#7dd3fc, on-tertiary:#082f49, surface:#111c2e, on-surface:#f1f5f9, on-surface-variant:#cbd5e1,
+  surface-container-lowest:#0b1220, surface-container-low:#111c2e, surface-container:#162236, surface-container-high:#1e293b, surface-container-highest:#273449,
+  outline:#94a3b8, outline-variant:#334155, error:#fca5a5, on-error:#450a0a, error-container:#7f1d1d, on-error-container:#fee2e2);

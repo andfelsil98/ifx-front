@@ -1,0 +1,11 @@
+[agents.senior_frontend_engineer]
+description = "Senior Frontend Engineer de IFX: arquitectura, Angular, DI, estado e implementación."
+config_file = "agents/senior_frontend_engineer.toml"
+
+[agents.senior_web_designer]
+description = "Senior Web Designer de IFX: DESIGN.md, UX/UI, Material, responsive y accesibilidad."
+config_file = "agents/senior_web_designer.toml"
+
+[agents.senior_qa_engineer]
+description = "Senior QA Engineer de IFX: regresiones, componentes, estados y validaciones finales."
+config_file = "agents/senior_qa_engineer.toml"

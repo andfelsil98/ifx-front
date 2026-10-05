@@ -1,1 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@fontsource-variable/sora/wght.css' as sora;
+@use '@fontsource-variable/jetbrains-mono/wght.css' as mono;
+@use './styles/theme';
+@use '@angular/material' as mat;
+*,*::before,*::after { box-sizing:border-box; }
+body { margin:0; min-block-size:100dvh; background:var(--ifx-background); color:var(--mat-sys-on-surface); font:var(--mat-sys-body-large); }
+app-root { display:block; } button,input { font:inherit; } h1,h2,h3 { font-weight:600; } h1 { font-weight:700; }
+.brand { display:flex; gap:12px; align-items:center; text-decoration:none; color:var(--mat-sys-on-surface); font-size:17px; letter-spacing:-.5px; }
+.brand img { border-radius:8px; object-fit:contain; background:transparent; } .brand strong { font-weight:600; }
+.eyebrow { color:var(--mat-sys-on-surface-variant); font-size:10px; font-weight:600; letter-spacing:1.8px; }
+.panel { background:var(--mat-sys-surface); border:1px solid var(--ifx-border); border-radius:12px; }
+.empty-state { display:flex; flex-direction:column; align-items:center; text-align:center; padding:56px 24px; } .empty-state p { margin:12px auto 24px; max-width:440px; color:var(--mat-sys-on-surface-variant); font-size:14px; line-height:1.7; } .empty-state h2,.empty-state h3 { margin:16px 0 0; }
+.state-symbol { display:inline-grid; place-items:center; width:48px; height:48px; border:1px solid var(--ifx-border); border-radius:12px; color:var(--mat-sys-primary); font-size:24px; }
+.error-message { color:var(--mat-sys-error); font-size:13px; } .danger-button { @include mat.button-overrides((filled-container-color:var(--mat-sys-error),filled-label-text-color:var(--mat-sys-on-error))); }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+a:focus-visible,.table-scroll:focus-visible { outline:2px solid var(--mat-sys-primary); outline-offset:4px; }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; } }
+
+.view-enter { animation:view-enter 180ms ease-out both; }
+@keyframes view-enter { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+body,button,input,.panel,.login-panel,.app-header,.vm-card,.theme-control,.summary,.resource-panel,.status,.navigation a,.account-details,.app-footer { transition:background-color 240ms ease,color 240ms ease,border-color 240ms ease; }
+@media(prefers-reduced-motion:reduce) { .view-enter { animation:none; } body,button,input,.panel,.login-panel,.app-header,.vm-card,.theme-control,.summary,.resource-panel,.status,.navigation a,.account-details,.app-footer { transition:none; } }

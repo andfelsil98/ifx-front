@@ -1,0 +1,31 @@
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { provideRouter, Router } from '@angular/router';
+import { Login } from './login';
+describe('Login UI',()=>{
+  let http:HttpTestingController;
+  beforeEach(()=>{TestBed.configureTestingModule({imports:[Login],providers:[provideHttpClient(),provideHttpClientTesting(),provideRouter([])]});http=TestBed.inject(HttpTestingController);});
+  afterEach(()=>http.verify());
+  it('toggles password visibility without changing credentials', () => {
+    const fixture = TestBed.createComponent(Login);
+    fixture.componentInstance.form.setValue({ email: 'user@example.com', password: 'typed-secret' });
+    fixture.detectChanges();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('input[formControlName="password"]');
+    const toggle: HTMLButtonElement = fixture.nativeElement.querySelector('button[aria-label="Mostrar contraseña"]');
+    expect(input.type).toBe('password');
+    toggle.click(); fixture.detectChanges();
+    expect(input.type).toBe('text');
+    expect(toggle.getAttribute('aria-label')).toBe('Ocultar contraseña');
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    toggle.click(); fixture.detectChanges();
+    expect(input.type).toBe('password');
+    expect(input.value).toBe('typed-secret');
+    expect(fixture.nativeElement.textContent).not.toContain('Acceso seguro');
+    expect(fixture.nativeElement.textContent).not.toContain('Tu infraestructura');
+  });
+  it('does not send invalid credentials',()=>{const fixture=TestBed.createComponent(Login);fixture.componentInstance.form.setValue({email:'invalid',password:''});fixture.componentInstance.submit();http.expectNone('http://localhost:3000/login');expect(fixture.componentInstance.form.touched).toBeTrue();});
+  it('shows generic feedback and preserves both credential fields after rejection',()=>{const fixture=TestBed.createComponent(Login);fixture.componentInstance.form.setValue({email:'user@example.com',password:'test'});fixture.componentInstance.submit();http.expectOne('http://localhost:3000/login').flush({error:'internal sensitive data'}, {status:401,statusText:'Unauthorized'});fixture.detectChanges();expect(fixture.nativeElement.textContent).toContain('Usuario o contraseña incorrectos.');expect(fixture.nativeElement.textContent).not.toContain('sensitive');expect(fixture.componentInstance.form.getRawValue()).toEqual({email:'user@example.com',password:'test'});});
+  it('cancels UI callbacks when the login component is destroyed',()=>{const fixture=TestBed.createComponent(Login);const navigate=spyOn(TestBed.inject(Router),'navigateByUrl').and.resolveTo(true);fixture.componentInstance.form.setValue({email:'user@example.com',password:'test'});fixture.componentInstance.submit();const request=http.expectOne('http://localhost:3000/login');fixture.destroy();expect(request.cancelled).toBeTrue();expect(navigate).not.toHaveBeenCalled();});
+  it('navigates to Dashboard after a successful login',()=>{const fixture=TestBed.createComponent(Login);const navigate=spyOn(TestBed.inject(Router),'navigateByUrl').and.resolveTo(true);fixture.componentInstance.form.setValue({email:'user@example.com',password:'test'});fixture.componentInstance.submit();http.expectOne('http://localhost:3000/login').flush({user:{id:'u',name:'User',email:'user@example.com'},role:'CLIENTE'});expect(navigate).toHaveBeenCalledWith('/dashboard');expect(fixture.componentInstance.form.getRawValue()).toEqual({email:'user@example.com',password:'test'});});
+});

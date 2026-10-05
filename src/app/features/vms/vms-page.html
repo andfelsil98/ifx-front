@@ -1,0 +1,42 @@
+<p class="sr-only" aria-live="polite" aria-atomic="true">{{ machines.updateAnnouncement() }}</p>
+<section class="page-heading"><div><span class="eyebrow">INVENTARIO</span><h1>Máquinas virtuales</h1><p>{{ isAdmin() ? 'Administra la configuración de tus máquinas.' : 'Consulta las máquinas disponibles y sus recursos.' }}</p></div>
+  @if(isAdmin()) { <button mat-flat-button (click)="edit()" [disabled]="machines.loading() || !!machines.error()">＋ Crear VM</button> }</section>
+@if(machines.connection() === 'offline') { <p role="status">Las actualizaciones en tiempo real están desconectadas. <button mat-button (click)="machines.retryLive()">Reconectar</button></p> }
+@else if(machines.connection() === 'reconnecting') { <p role="status">Reconectando actualizaciones…</p> }
+@if(machines.loading()) {
+  <section class="inventory-loading" role="status" aria-label="Cargando máquinas" aria-busy="true">
+    <span class="sr-only">Cargando máquinas virtuales…</span>
+    <div aria-hidden="true">
+      <div class="status-filters">@for(status of statuses; track status) { <app-loading-skeleton width="112px" height="40px" /> }</div>
+      <div class="vm-grid">@for(item of [1,2,3,4,5,6,7,8,9,10]; track item) {
+        <article class="vm-card">
+          <div class="card-heading"><app-loading-skeleton width="44px" height="44px" /><app-loading-skeleton width="88px" height="24px" /></div>
+          <app-loading-skeleton width="65%" height="22px" /><div class="skeleton-update-slot"></div><app-loading-skeleton class="skeleton-os" width="45%" height="16px" />
+          <div class="resources">@for(resource of [1,2,3]; track resource) { <div class="skeleton-resource"><app-loading-skeleton width="50%" height="13px" /><app-loading-skeleton width="75%" height="22px" /></div> }</div>
+          @if(isAdmin()) { <div class="card-actions"><app-loading-skeleton width="80px" height="40px" /><app-loading-skeleton width="88px" height="40px" /></div> }
+        </article>
+      }</div>
+      <div class="pagination"><app-loading-skeleton width="86px" height="40px" /><app-loading-skeleton width="64px" height="14px" /><app-loading-skeleton width="94px" height="40px" /></div>
+    </div>
+  </section>
+}
+@else if(machines.error()) { <section class="empty-state panel" role="alert"><h2>No pudimos cargar las máquinas</h2><p>Comprueba tu conexión y vuelve a intentarlo.</p><button mat-flat-button (click)="reload()">Reintentar</button></section> }
+@else {
+  <div class="status-filters" role="group" aria-label="Filtrar por estado">@for(status of statuses; track status) {
+    <button mat-button (click)="selectStatus(status)" [disabled]="machines.loading() || machines.pendingIds().size > 0" [attr.aria-pressed]="statusFilter() === status" [class.selected]="statusFilter() === status">{{ filterLabels[status] }} <span>{{ statusCounts()[status] }}</span></button>
+  }</div>
+  @if(machines.summary().total > 0 && machines.filteredTotal() === 0) { <section class="empty-state panel"><h2>No hay máquinas en este estado</h2><p>Selecciona otro estado para consultar las máquinas disponibles.</p></section> }
+  @else if(machines.filteredTotal() === 0) { <section class="empty-state panel"><span class="state-symbol">◇</span><h2>Aún no hay máquinas virtuales</h2><p>{{ isAdmin() ? 'Crea la primera VM para comenzar a organizar tus recursos.' : 'Las máquinas aparecerán aquí cuando el administrador las cree.' }}</p>@if(isAdmin()) { <button mat-flat-button (click)="edit()">Crear primera VM</button> }</section> }
+  @else if(machines.vms().length === 0) { <section class="empty-state panel"><h2>Esta página ya no tiene máquinas</h2><p>Vuelve a la página anterior o cambia el estado seleccionado.</p></section> }
+  @else { <section class="vm-grid" aria-label="Inventario de máquinas virtuales">@for(vm of machines.vms(); track vm.id) {
+    <article class="vm-card" [attr.aria-busy]="machines.isPending(vm.id)" [class.live-updated]="machines.changedIds().has(vm.id)">
+      <div class="card-heading"><div class="server-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24"><rect x="4" y="4" width="16" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" /><rect x="4" y="14" width="16" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" /><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg></div><span class="status" [class.stopped]="vm.status === 'STOPPED'" [class.running]="vm.status === 'RUNNING'" [class.suspended]="vm.status === 'SUSPENDED'">{{ statusLabels[vm.status] }}</span></div>
+      <h2>{{ vm.name }}</h2><span class="updated-badge" [class.visible]="machines.changedIds().has(vm.id)" [attr.aria-hidden]="machines.changedIds().has(vm.id) ? null : 'true'">Actualizada</span><p class="os">{{ vm.os }}</p>
+      <dl class="resources"><div><dt>Cores</dt><dd>{{ vm.cores | number:'1.0-0' }}</dd></div><div><dt>RAM</dt><dd>{{ vm.ram | number:'1.0-6' }} <span>GB</span></dd></div><div><dt>Disco</dt><dd>{{ vm.disk | number:'1.0-6' }} <span>GB</span></dd></div></dl>
+      @if(machines.isPending(vm.id)) { <p class="saving" role="status"><app-button-spinner /> Guardando cambios…</p> }
+      @if(isAdmin()) { <div class="card-actions"><button mat-stroked-button (click)="edit(vm)" [disabled]="machines.isPending(vm.id)" [attr.aria-label]="'Editar ' + vm.name">Editar</button><button mat-button (click)="remove(vm)" [disabled]="machines.isPending(vm.id)" [attr.aria-label]="'Eliminar ' + vm.name">Eliminar</button></div> }
+    </article>
+  }</section> }
+  <nav class="pagination" aria-label="Paginación de máquinas virtuales"><button mat-stroked-button (click)="previousPage()" [disabled]="!machines.hasPrevious() || machines.loading() || machines.pendingIds().size > 0">Anterior</button><span role="status" aria-live="polite">Página {{ machines.pageNumber() }}</span><button mat-stroked-button (click)="nextPage()" [disabled]="!machines.hasNext() || machines.loading() || machines.pendingIds().size > 0">Siguiente</button></nav>
+  @if(machines.pendingIds().size > 0) { <p class="pending-note" role="status">Guardando cambios. La configuración se restaurará si el servidor rechaza una operación.</p> }
+}

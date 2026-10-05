@@ -1,0 +1,15 @@
+<div class="login-page">
+  <div class="login-background background-light" aria-hidden="true"></div>
+  <div class="login-background background-dark" [class.visible]="theme.dark()" aria-hidden="true"></div>
+  <div class="theme-control"><app-theme-toggle /></div>
+  <div class="login-layout view-enter"><section class="login-panel" aria-labelledby="login-title">
+    <div class="login-brand"><img class="logo-light" [class.hidden]="theme.dark()" src="/resources/full-logo-dark.png" alt="VMS Manager" width="220" height="74"><img class="logo-dark" [class.visible]="theme.dark()" src="/resources/full-logo-white.png" alt="" width="220" height="74" aria-hidden="true"></div>
+    <h1 id="login-title">Bienvenido de nuevo</h1>
+    <form [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="busy()">
+      <mat-form-field appearance="outline"><mat-label>Email</mat-label><input matInput type="email" formControlName="email" autocomplete="username" [readonly]="busy()" required>@if(form.controls.email.invalid){<mat-error>Ingresa un email válido.</mat-error>}</mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>Contraseña</mat-label><input matInput [type]="passwordVisible() ? 'text' : 'password'" formControlName="password" autocomplete="current-password" [readonly]="busy()" required><button mat-icon-button matSuffix type="button" (click)="passwordVisible.set(!passwordVisible())" [attr.aria-label]="passwordVisible() ? 'Ocultar contraseña' : 'Mostrar contraseña'" [attr.aria-pressed]="passwordVisible()"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>@if(passwordVisible()){<path d="m3 3 18 18"/>}</svg></button>@if(form.controls.password.invalid){<mat-error>Ingresa tu contraseña.</mat-error>}</mat-form-field>
+      @if(error()){<p role="alert" class="error-message">{{ error() }}</p>}
+      <button mat-flat-button type="submit" [disabled]="busy()" [attr.aria-busy]="busy()">@if(busy()){<app-button-spinner />}{{ busy() ? 'Iniciando sesión…' : 'Iniciar sesión' }}</button>
+    </form>
+  </section></div>
+</div>

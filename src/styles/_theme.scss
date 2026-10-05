@@ -1,0 +1,23 @@
+@use '@angular/material' as mat;
+@use './tokens' as tokens;
+html {
+  color-scheme: light;
+  @include mat.theme((color:(primary:tokens.$primary-palette,theme-type:light),typography:(plain-family:tokens.$font-family,brand-family:tokens.$font-family,regular-weight:400,medium-weight:500,bold-weight:700),density:tokens.$density));
+  @include mat.theme-overrides(tokens.$light);
+  @include mat.theme-overrides((headline-large-weight:700,headline-medium-weight:700,headline-small-weight:600,title-large-weight:600));
+  @include mat.button-overrides((filled-container-shape:tokens.$radius-control,outlined-container-shape:tokens.$radius-control,protected-container-shape:tokens.$radius-control,text-container-shape:tokens.$radius-control,tonal-container-shape:tokens.$radius-control));
+  @include mat.form-field-overrides((outlined-container-shape:tokens.$radius-control,filled-container-shape:tokens.$radius-control));
+  @include mat.dialog-overrides((container-shape:tokens.$radius-dialog));
+  --ifx-background:#f8fafc; --ifx-border:#e2e8f0; --ifx-table-head:#f8fafc; --ifx-skeleton:#e2e8f0;
+  --ifx-primary-dark:#1d4ed8; --ifx-secondary:#14b8a6; --ifx-accent:#0ea5e9; --ifx-success:#10b981; --ifx-warning:#f59e0b; --ifx-error:#ef4444;
+  --ifx-success-surface:#d1fae5; --ifx-success-text:#065f46; --ifx-warning-surface:#fef3c7; --ifx-warning-text:#92400e;
+  --ifx-mono:'JetBrains Mono Variable', monospace;
+  --ifx-radius-control:#{tokens.$radius-control}; --ifx-radius-dialog:#{tokens.$radius-dialog};
+  @each $step,$value in tokens.$spacing { --ifx-space-#{$step}: #{$value}; }
+}
+html.dark-theme {
+  color-scheme:dark;
+  @include mat.theme-overrides(tokens.$dark);
+  --ifx-background:#0b1220; --ifx-border:#334155; --ifx-table-head:#162236; --ifx-skeleton:#334155;
+  --ifx-success-surface:#064e3b; --ifx-success-text:#a7f3d0; --ifx-warning-surface:#451a03; --ifx-warning-text:#fde68a;
+}
